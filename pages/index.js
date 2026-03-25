@@ -18,9 +18,9 @@ const DEMO = {
     {
       title: 'Wearing too many hats kills momentum',
       description:
-        'Switching between product, marketing, sales, and support in the same day fragments focus and kills deep work. "I'm a developer forced to be a marketer" is a recurring theme.',
+        "Switching between product, marketing, sales, and support in the same day fragments focus and kills deep work. \"I'm a developer forced to be a marketer\" is a recurring theme.",
       intensity: 'high',
-      sources: ['Can\'t ship features because I\'m doing customer support', 'Context switching is killing me'],
+      sources: ["Can't ship features because I'm doing customer support", 'Context switching is killing me'],
     },
     {
       title: 'Charging too little out of fear',
