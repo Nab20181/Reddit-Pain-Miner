@@ -1,14 +1,21 @@
 import { useState } from 'react';
 
+const TIMEFRAMES = [
+  { label: '1 Week', value: 'week' },
+  { label: '1 Month', value: 'month' },
+  { label: '3 Months', value: 'year' },
+  { label: 'All Time', value: 'all' },
+];
+
 export default function Home() {
   const [subreddit, setSubreddit] = useState('');
   const [apiKey, setApiKey] = useState('');
-  const [showKey, setShowKey] = useState(false);
+  const [timeframe, setTimeframe] = useState('month');
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const [postCount, setPostCount] = useState(null);
+  const [posts, setPosts] = useState([]);
 
   const analyze = async () => {
     if (!subreddit.trim() || !apiKey.trim()) {
@@ -19,14 +26,13 @@ export default function Home() {
     setLoading(true);
     setResult(null);
     setError(null);
-    setPostCount(null);
+    setPosts([]);
 
     try {
-      // Fetch Reddit directly from browser (avoids server-side blocks)
       setLoadingMsg('Fetching Reddit posts...');
       const sub = subreddit.trim().replace(/^r\//, '');
       const redditRes = await fetch(
-        `https://www.reddit.com/r/${sub}/top.json?limit=50&t=month`,
+        `https://www.reddit.com/r/${sub}/top.json?limit=50&t=${timeframe}`,
         { headers: { 'Accept': 'application/json' } }
       );
 
@@ -35,33 +41,35 @@ export default function Home() {
       }
 
       const redditData = await redditRes.json();
-      const posts = redditData.data.children.map(p => ({
+      const fetchedPosts = redditData.data.children.map(p => ({
         title: p.data.title,
-        selftext: p.data.selftext?.slice(0, 300) || '',
+        selftext: p.data.selftext?.slice(0, 150) || '',
         score: p.data.score,
         num_comments: p.data.num_comments,
+        url: `https://reddit.com${p.data.permalink}`,
       }));
 
-      if (!posts || posts.length === 0) {
+      if (!fetchedPosts || fetchedPosts.length === 0) {
         throw new Error('No posts found. Check the subreddit name.');
       }
 
-      // Send posts + API key to our backend for Claude analysis
-      setLoadingMsg(`Analyzing ${posts.length} posts with Claude...`);
+      setPosts(fetchedPosts);
+
+      setLoadingMsg(`Analyzing ${fetchedPosts.length} posts with Claude...`);
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ posts, subreddit: sub, apiKey: apiKey.trim() }),
+        body: JSON.stringify({
+          posts: fetchedPosts.slice(0, 25),
+          subreddit: sub,
+          apiKey: apiKey.trim(),
+        }),
       });
 
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Something went wrong.');
-      }
+      if (!res.ok) throw new Error(data.error || 'Something went wrong.');
 
       setResult(data.analysis);
-      setPostCount(data.postCount);
     } catch (err) {
       setError(err.message || 'Something went wrong.');
     } finally {
@@ -123,11 +131,31 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Timeframe selector */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-400 mb-2">Timeframe</label>
+            <div className="flex gap-2 flex-wrap">
+              {TIMEFRAMES.map(tf => (
+                <button
+                  key={tf.value}
+                  onClick={() => setTimeframe(tf.value)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition border ${
+                    timeframe === tf.value
+                      ? 'bg-orange-500 border-orange-500 text-white'
+                      : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-orange-500 hover:text-white'
+                  }`}
+                >
+                  {tf.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="mb-5">
             <label className="block text-sm font-medium text-gray-400 mb-1">
               Claude API Key
               <span className="text-gray-500 font-normal ml-2">
-                (your key, stays in your browser —{' '}
+                (stays in your browser —{' '}
                 <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">
                   get one free
                 </a>)
@@ -166,16 +194,14 @@ export default function Home() {
           </div>
         )}
 
-        {/* Results */}
+        {/* Analysis Results */}
         {result && (
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6">
             <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-800">
               <h2 className="font-bold text-lg">Analysis: r/{subreddit.replace(/^r\//, '')}</h2>
-              {postCount && (
-                <span className="text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded-full">
-                  {postCount} posts analyzed
-                </span>
-              )}
+              <span className="text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded-full">
+                {posts.length} posts · {TIMEFRAMES.find(t => t.value === timeframe)?.label}
+              </span>
             </div>
             <div className="prose prose-invert max-w-none">
               {renderResult(result)}
@@ -183,7 +209,33 @@ export default function Home() {
           </div>
         )}
 
-        {/* Footer */}
+        {/* Source Posts */}
+        {posts.length > 0 && (
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <h2 className="font-bold text-lg mb-4 pb-4 border-b border-gray-800">
+              📋 Source Posts <span className="text-gray-500 font-normal text-sm ml-2">click to verify on Reddit</span>
+            </h2>
+            <div className="space-y-2">
+              {posts.map((post, i) => (
+                <a
+                  key={i}
+                  href={post.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-800 transition group"
+                >
+                  <span className="text-gray-600 text-sm font-mono mt-0.5 w-5 shrink-0">{i + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-gray-300 group-hover:text-white text-sm leading-snug">{post.title}</p>
+                    <p className="text-gray-600 text-xs mt-1">↑ {post.score.toLocaleString()} · {post.num_comments} comments</p>
+                  </div>
+                  <span className="text-gray-600 group-hover:text-orange-400 text-xs shrink-0 mt-0.5">↗</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
         <p className="text-center text-gray-600 text-xs mt-10">
           Your API key never leaves your browser session. Built with Next.js + Claude.
         </p>
