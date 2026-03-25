@@ -293,7 +293,7 @@ export default function Landing() {
       <section className="border-t border-[#1e2a3a] py-24 px-6">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-slate-100 mb-3">Start free. Upgrade when you're ready.</h2>
-          <p className="text-slate-400 mb-8">Free tier available with your own Claude API key. Pro plans from $9/mo.</p>
+          <p className="text-slate-400 mb-8">Free tier available with your own Claude API key. Pro plans from $19/mo.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/pricing" className="bg-[#161c27] hover:bg-[#1e2a3a] border border-[#1e2a3a] text-slate-200 font-semibold px-6 py-3 rounded-xl transition text-sm">
               See pricing
