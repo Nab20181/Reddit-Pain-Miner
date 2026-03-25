@@ -10,39 +10,19 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Posts and API key are required.' });
   }
 
-  const trimmedPosts = posts.slice(0, 25);
+  // Keep only top 15 posts, titles only (no body text) to stay under rate limits
+  const trimmedPosts = posts.slice(0, 15);
   const postsText = trimmedPosts
-    .map((p, i) => `[${i + 1}] "${p.title}" (${p.score} upvotes)\n${p.selftext?.slice(0, 150) || ''}`)
-    .join('\n\n');
+    .map((p, i) => `[${i + 1}] "${p.title}" (${p.score} upvotes)`)
+    .join('\n');
 
-  const prompt = `You are a sharp product researcher. Analyze these Reddit posts from r/${subreddit} and return a JSON object — nothing else, no markdown, no explanation, just raw JSON.
+  const prompt = `Analyze these Reddit post titles from r/${subreddit}. Return ONLY raw JSON, no markdown.
 
-Posts:
 ${postsText}
 
-Return exactly this structure:
-{
-  "painPoints": [
-    { "title": "short title", "description": "1-2 sentence description with specifics", "intensity": "high|medium|low", "sources": [1, 4, 7] }
-  ],
-  "themes": [
-    { "theme": "theme name", "detail": "what pattern you noticed" }
-  ],
-  "opportunities": [
-    { "idea": "product/service idea", "why": "why it fits the pain" }
-  ],
-  "quotes": [
-    { "text": "direct quote from a post title or body", "why": "why this quote matters for marketing" }
-  ],
-  "summary": "2-3 sentence executive summary of the biggest opportunity in this subreddit"
-}
+{"painPoints":[{"title":"short","description":"1-2 sentences","intensity":"high|medium|low","sources":[1,2]}],"themes":[{"theme":"name","detail":"pattern"}],"opportunities":[{"idea":"product idea","why":"reason"}],"quotes":[{"text":"quote from a title","why":"marketing value"}],"summary":"2-3 sentence opportunity summary"}
 
-Rules:
-- painPoints: exactly 5 items, ranked by intensity. sources = array of post numbers (the [N] numbers) that support this pain point, up to 3
-- themes: 3-4 items
-- opportunities: 3 items  
-- quotes: 3-4 direct quotes
-- Be specific. No fluff. These are for founders.`;
+Rules: 5 painPoints ranked by intensity (sources=post numbers up to 3), 3-4 themes, 3 opportunities, 3-4 quotes, be specific.`;
 
   try {
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
