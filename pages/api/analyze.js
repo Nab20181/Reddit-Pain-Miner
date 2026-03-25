@@ -1,33 +1,10 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { subreddit, apiKey } = req.body;
+  const { posts, subreddit, apiKey } = req.body;
 
-  if (!subreddit || !apiKey) {
-    return res.status(400).json({ error: 'Subreddit and API key are required.' });
-  }
-
-  // Fetch top posts from Reddit (no auth needed for JSON API)
-  let posts;
-  try {
-    const redditRes = await fetch(
-      `https://www.reddit.com/r/${subreddit}/top.json?limit=50&t=month`,
-      { headers: { 'User-Agent': 'reddit-pain-miner/0.1' } }
-    );
-    if (!redditRes.ok) throw new Error(`Reddit returned ${redditRes.status}`);
-    const data = await redditRes.json();
-    posts = data.data.children.map(p => ({
-      title: p.data.title,
-      selftext: p.data.selftext?.slice(0, 300) || '',
-      score: p.data.score,
-      num_comments: p.data.num_comments,
-    }));
-  } catch (err) {
-    return res.status(500).json({ error: `Failed to fetch Reddit data: ${err.message}` });
-  }
-
-  if (!posts || posts.length === 0) {
-    return res.status(404).json({ error: 'No posts found. Check the subreddit name.' });
+  if (!posts || !apiKey) {
+    return res.status(400).json({ error: 'Posts and API key are required.' });
   }
 
   const postsText = posts

@@ -4,6 +4,7 @@ export default function Home() {
   const [subreddit, setSubreddit] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState('');
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [postCount, setPostCount] = useState(null);
@@ -20,27 +21,51 @@ export default function Home() {
     setPostCount(null);
 
     try {
+      // Fetch Reddit directly from browser (avoids server-side blocks)
+      setLoadingMsg('Fetching Reddit posts...');
+      const sub = subreddit.trim().replace(/^r\//, '');
+      const redditRes = await fetch(
+        `https://www.reddit.com/r/${sub}/top.json?limit=50&t=month`,
+        { headers: { 'Accept': 'application/json' } }
+      );
+
+      if (!redditRes.ok) {
+        throw new Error(`Subreddit not found or private (Reddit returned ${redditRes.status})`);
+      }
+
+      const redditData = await redditRes.json();
+      const posts = redditData.data.children.map(p => ({
+        title: p.data.title,
+        selftext: p.data.selftext?.slice(0, 300) || '',
+        score: p.data.score,
+        num_comments: p.data.num_comments,
+      }));
+
+      if (!posts || posts.length === 0) {
+        throw new Error('No posts found. Check the subreddit name.');
+      }
+
+      // Send posts + API key to our backend for Claude analysis
+      setLoadingMsg(`Analyzing ${posts.length} posts with Claude...`);
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subreddit: subreddit.trim().replace(/^r\//, ''),
-          apiKey: apiKey.trim(),
-        }),
+        body: JSON.stringify({ posts, subreddit: sub, apiKey: apiKey.trim() }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Something went wrong.');
-      } else {
-        setResult(data.analysis);
-        setPostCount(data.postCount);
+        throw new Error(data.error || 'Something went wrong.');
       }
+
+      setResult(data.analysis);
+      setPostCount(data.postCount);
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError(err.message || 'Something went wrong.');
     } finally {
       setLoading(false);
+      setLoadingMsg('');
     }
   };
 
@@ -48,15 +73,15 @@ export default function Home() {
     if (e.key === 'Enter') analyze();
   };
 
-  // Render markdown-ish output with basic formatting
   const renderResult = (text) => {
     return text.split('\n').map((line, i) => {
-      if (line.startsWith('**') && line.endsWith('**')) {
-        return <h3 key={i} className="text-lg font-bold text-white mt-6 mb-2">{line.replace(/\*\*/g, '')}</h3>;
+      if (line.match(/^\*\*.*\*\*$/) || line.match(/^#+\s/)) {
+        return <h3 key={i} className="text-lg font-bold text-white mt-6 mb-2">{line.replace(/\*\*/g, '').replace(/^#+\s/, '')}</h3>;
       }
       if (line.match(/^\d+\.\s\*\*/)) {
-        const content = line.replace(/^\d+\.\s/, '').replace(/\*\*/g, '');
-        return <p key={i} className="font-semibold text-orange-400 mt-4 mb-1">{line.match(/^\d+\./)[0]} {content}</p>;
+        const num = line.match(/^\d+\./)[0];
+        const content = line.replace(/^\d+\.\s\*\*/, '').replace(/\*\*/, '');
+        return <p key={i} className="font-semibold text-orange-400 mt-4 mb-1">{num} {content}</p>;
       }
       if (line.startsWith('- ') || line.startsWith('* ')) {
         return <li key={i} className="text-gray-300 ml-4 list-disc mb-1">{line.slice(2).replace(/\*\*/g, '')}</li>;
@@ -101,7 +126,10 @@ export default function Home() {
             <label className="block text-sm font-medium text-gray-400 mb-1">
               Claude API Key
               <span className="text-gray-500 font-normal ml-2">
-                (your key, stays in your browser — <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">get one free</a>)
+                (your key, stays in your browser —{' '}
+                <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">
+                  get one free
+                </a>)
               </span>
             </label>
             <input
@@ -121,8 +149,8 @@ export default function Home() {
           >
             {loading ? (
               <>
-                <span className="animate-spin">⟳</span>
-                Mining Reddit...
+                <span className="animate-spin inline-block">⟳</span>
+                {loadingMsg || 'Working...'}
               </>
             ) : (
               <>⛏️ Mine for Pain Points</>
