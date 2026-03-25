@@ -3,16 +3,16 @@ import Link from 'next/link';
 
 const FAQS = [
   {
-    q: "What is PainMiner?",
-    a: "PainMiner analyzes Reddit communities to surface real pain points, recurring frustrations, and product opportunities. You enter a subreddit, pick a timeframe, and get a structured breakdown of what people are struggling with — ready to inform your next product, marketing campaign, or business idea."
+    q: "What is Subtext?",
+    a: "Subtext analyzes Reddit communities to surface real pain points, recurring frustrations, and product opportunities. You enter a subreddit, pick a timeframe, and get a structured breakdown of what people are struggling with — ready to inform your next product, marketing campaign, or business idea."
   },
   {
     q: "How does it work?",
-    a: "PainMiner fetches the top posts from any subreddit using Reddit's public API, then uses Claude AI to analyze them and extract structured insights: pain points, themes, opportunities, and quotes. The entire analysis runs in under 30 seconds."
+    a: "Subtext fetches the top posts from any subreddit using Reddit's public API, then uses Claude AI to analyze them and extract structured insights: pain points, themes, opportunities, and quotes. The entire analysis runs in under 30 seconds."
   },
   {
     q: "Why do I need a Claude API key?",
-    a: "PainMiner uses Claude AI to analyze Reddit posts. During our beta, users supply their own Claude API key so you only pay for what you use. New Anthropic accounts come with free credits — enough to run dozens of analyses. Once we launch paid plans, you won't need your own key."
+    a: "Subtext uses Claude AI to analyze Reddit posts. During our beta, users supply their own Claude API key so you only pay for what you use. New Anthropic accounts come with free credits — enough to run dozens of analyses. Once we launch paid plans, you won't need your own key."
   },
   {
     q: "Is my API key stored anywhere?",
@@ -32,7 +32,7 @@ const FAQS = [
   },
   {
     q: "Is this legal? Are you scraping Reddit?",
-    a: "PainMiner uses Reddit's public JSON API — the same data available to anyone visiting Reddit. We only access public posts, link back to all sources, and stay well within normal usage limits. We are not affiliated with or endorsed by Reddit."
+    a: "Subtext uses Reddit's public JSON API — the same data available to anyone visiting Reddit. We only access public posts, link back to all sources, and stay well within normal usage limits. We are not affiliated with or endorsed by Reddit."
   },
   {
     q: "Can I export the results?",
@@ -65,7 +65,7 @@ export default function FAQ() {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 w-fit">
             <span className="text-lg">⛏️</span>
-            <span className="font-semibold text-slate-100 tracking-tight">PainMiner</span>
+            <span className="font-semibold text-slate-100 tracking-tight">Subtext</span>
           </Link>
           <Link href="/signup" className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition font-medium">
             Join waitlist
@@ -75,7 +75,7 @@ export default function FAQ() {
 
       <div className="max-w-2xl mx-auto px-6 py-16">
         <h1 className="text-3xl font-bold text-slate-100 mb-2">Frequently asked questions</h1>
-        <p className="text-slate-400 text-sm mb-12">Everything you need to know about PainMiner.</p>
+        <p className="text-slate-400 text-sm mb-12">Everything you need to know about Subtext.</p>
 
         <div className="bg-[#161c27] border border-[#1e2a3a] rounded-2xl px-6">
           {FAQS.map((faq, i) => <FAQItem key={i} q={faq.q} a={faq.a} />)}
@@ -83,8 +83,8 @@ export default function FAQ() {
 
         <div className="mt-10 text-center">
           <p className="text-slate-400 text-sm mb-4">Still have questions?</p>
-          <a href="mailto:hello@painminer.com" className="text-blue-400 hover:text-blue-300 text-sm transition">
-            hello@painminer.com
+          <a href="mailto:hello@Subtext.com" className="text-blue-400 hover:text-blue-300 text-sm transition">
+            hello@Subtext.com
           </a>
         </div>
       </div>
@@ -107,4 +107,5 @@ function Footer() {
     </footer>
   );
 }
+
 

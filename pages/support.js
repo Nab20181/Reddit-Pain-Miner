@@ -20,8 +20,8 @@ const SECTIONS = [
     icon: '🚀',
     title: 'Getting started',
     articles: [
-      { title: 'What is PainMiner?', body: 'PainMiner analyzes Reddit communities to surface real pain points, product opportunities, and marketing-ready quotes. Enter any subreddit, pick a timeframe, and get structured AI insights in under 30 seconds.' },
-      { title: 'How to run your first analysis', body: 'Go to the app, type a subreddit name (without the r/ prefix), select a timeframe, enter your Claude API key, and click "Mine for Pain Points". Results appear in seconds.' },
+      { title: 'What is Subtext?', body: 'Subtext analyzes Reddit communities to surface real pain points, product opportunities, and marketing-ready quotes. Enter any subreddit, pick a timeframe, and get structured AI insights in under 30 seconds.' },
+      { title: 'How to run your first analysis', body: 'Go to the app, type a subreddit name (without the r/ prefix), select a timeframe, enter your Claude API key, and click "Read the Subtext". Results appear in seconds.' },
       { title: 'Getting a Claude API key', body: 'Visit console.anthropic.com, create a free account, and generate an API key under "API Keys". New accounts receive free credits — enough for dozens of analyses. Your key is stored locally in your browser and never sent to our servers.' },
     ],
   },
@@ -52,7 +52,7 @@ const SECTIONS = [
       { title: 'I\'m getting a Claude API error', body: 'Check that your API key starts with "sk-ant-" and was copied completely. Also verify your Anthropic account has credits remaining at console.anthropic.com. If you\'re on a free tier, you may hit rate limits — wait a minute and try again.' },
       { title: 'Subreddit not found error', body: 'Make sure the subreddit name is spelled correctly and the community is public. Private or quarantined subreddits cannot be accessed. Try without the "r/" prefix.' },
       { title: 'Analysis returned empty or weird results', body: 'This can happen with very small subreddits (fewer than 10 posts) or highly niche communities where post titles are cryptic. Try a larger timeframe or a more active subreddit.' },
-      { title: 'My API key isn\'t saving', body: 'PainMiner saves your key in localStorage. If it\'s not persisting, check that your browser isn\'t clearing localStorage on close, or that you\'re not in private/incognito mode.' },
+      { title: 'My API key isn\'t saving', body: 'Subtext saves your key in localStorage. If it\'s not persisting, check that your browser isn\'t clearing localStorage on close, or that you\'re not in private/incognito mode.' },
     ],
   },
 ];
@@ -73,7 +73,7 @@ export default function Support() {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <span className="text-lg">⛏️</span>
-            <span className="font-semibold text-slate-100 tracking-tight">PainMiner</span>
+            <span className="font-semibold text-slate-100 tracking-tight">Subtext</span>
           </Link>
           <Link href="/contact" className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition font-medium">
             Contact us
@@ -84,7 +84,7 @@ export default function Support() {
       <div className="max-w-3xl mx-auto px-6 py-16">
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold text-slate-100 mb-2">Help Center</h1>
-          <p className="text-slate-400 text-sm">Everything you need to get the most out of PainMiner.</p>
+          <p className="text-slate-400 text-sm">Everything you need to get the most out of Subtext.</p>
         </div>
 
         {/* Quick links */}
@@ -133,3 +133,4 @@ export default function Support() {
     </div>
   );
 }
+

@@ -14,7 +14,7 @@ export default function TOS() {
         <div className="max-w-4xl mx-auto">
           <Link href="/" className="flex items-center gap-2.5 w-fit">
             <span className="text-lg">⛏️</span>
-            <span className="font-semibold text-slate-100 tracking-tight">PainMiner</span>
+            <span className="font-semibold text-slate-100 tracking-tight">Subtext</span>
           </Link>
         </div>
       </nav>
@@ -24,17 +24,17 @@ export default function TOS() {
         <p className="text-slate-500 text-sm mb-12">Last updated: March 2026</p>
 
         <Section title="Acceptance">
-          <p>By using PainMiner, you agree to these terms. If you don't agree, don't use the service.</p>
+          <p>By using Subtext, you agree to these terms. If you don't agree, don't use the service.</p>
         </Section>
 
-        <Section title="What PainMiner Is">
-          <p>PainMiner is a research tool that analyzes publicly available Reddit data to surface market insights. It is provided for informational and research purposes only.</p>
+        <Section title="What Subtext Is">
+          <p>Subtext is a research tool that analyzes publicly available Reddit data to surface market insights. It is provided for informational and research purposes only.</p>
         </Section>
 
         <Section title="Acceptable Use">
           <p>You agree not to:</p>
           <ul className="list-disc ml-4 space-y-1">
-            <li>Use PainMiner for any illegal purpose</li>
+            <li>Use Subtext for any illegal purpose</li>
             <li>Attempt to scrape, abuse, or overload the service</li>
             <li>Resell or redistribute raw output as a data product</li>
             <li>Use the service to harass, target, or harm individuals</li>
@@ -42,32 +42,32 @@ export default function TOS() {
         </Section>
 
         <Section title="Your API Key">
-          <p>If you supply a Claude API key, you are responsible for all usage and costs associated with that key. We are not liable for any charges incurred through use of PainMiner.</p>
+          <p>If you supply a Claude API key, you are responsible for all usage and costs associated with that key. We are not liable for any charges incurred through use of Subtext.</p>
         </Section>
 
         <Section title="Reddit Data">
-          <p>PainMiner accesses publicly available Reddit data via Reddit's public API. We do not guarantee the accuracy, completeness, or availability of this data. Reddit may change or restrict their API at any time.</p>
+          <p>Subtext accesses publicly available Reddit data via Reddit's public API. We do not guarantee the accuracy, completeness, or availability of this data. Reddit may change or restrict their API at any time.</p>
         </Section>
 
         <Section title="No Warranties">
-          <p>PainMiner is provided "as is" without warranty of any kind. We do not guarantee uptime, accuracy of AI analysis, or fitness for any particular purpose. Use at your own risk.</p>
+          <p>Subtext is provided "as is" without warranty of any kind. We do not guarantee uptime, accuracy of AI analysis, or fitness for any particular purpose. Use at your own risk.</p>
         </Section>
 
         <Section title="Limitation of Liability">
-          <p>To the maximum extent permitted by law, PainMiner and its operators shall not be liable for any indirect, incidental, or consequential damages arising from your use of the service.</p>
+          <p>To the maximum extent permitted by law, Subtext and its operators shall not be liable for any indirect, incidental, or consequential damages arising from your use of the service.</p>
         </Section>
 
         <Section title="Payments & Refunds">
           <p>All paid plans are billed monthly in advance. You may cancel your subscription at any time — your access will continue until the end of the current billing period.</p>
-          <p><strong className="text-slate-300">All sales are final. We do not offer refunds.</strong> By subscribing, you acknowledge and agree to this policy. If you experience a technical issue preventing you from using the service, contact us at <span className="text-blue-400">hello@painminer.com</span> and we will work to resolve it promptly.</p>
+          <p><strong className="text-slate-300">All sales are final. We do not offer refunds.</strong> By subscribing, you acknowledge and agree to this policy. If you experience a technical issue preventing you from using the service, contact us at <span className="text-blue-400">hello@Subtext.com</span> and we will work to resolve it promptly.</p>
         </Section>
 
         <Section title="Changes">
-          <p>We may update these terms at any time. Continued use of PainMiner constitutes acceptance of the updated terms.</p>
+          <p>We may update these terms at any time. Continued use of Subtext constitutes acceptance of the updated terms.</p>
         </Section>
 
         <Section title="Contact">
-          <p>Questions? Email us at <span className="text-blue-400">hello@painminer.com</span></p>
+          <p>Questions? Email us at <span className="text-blue-400">hello@Subtext.com</span></p>
         </Section>
       </div>
 
@@ -89,4 +89,5 @@ function Footer() {
     </footer>
   );
 }
+
 

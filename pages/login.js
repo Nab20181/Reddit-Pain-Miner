@@ -16,7 +16,7 @@ export default function Login() {
         <div className="max-w-4xl mx-auto">
           <Link href="/" className="flex items-center gap-2.5 w-fit">
             <span className="text-lg">⛏️</span>
-            <span className="font-semibold text-slate-100 tracking-tight">PainMiner</span>
+            <span className="font-semibold text-slate-100 tracking-tight">Subtext</span>
           </Link>
         </div>
       </nav>
@@ -68,3 +68,4 @@ export default function Login() {
     </div>
   );
 }
+

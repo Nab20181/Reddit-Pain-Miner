@@ -137,7 +137,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <a href="/" className="flex items-center gap-2.5">
             <span className="text-lg">⛏️</span>
-            <span className="font-semibold text-slate-100 tracking-tight">PainMiner</span>
+            <span className="font-semibold text-slate-100 tracking-tight">Subtext</span>
           </a>
           <div className="flex items-center gap-4">
             <a href="/pricing" className="text-xs text-slate-400 hover:text-slate-200 transition">Pricing</a>
@@ -232,7 +232,7 @@ export default function Home() {
                 {loadingMsg || 'Working...'}
               </>
             ) : (
-              'Mine for Pain Points'
+              'Read the Subtext'
             )}
           </button>
         </Card>
@@ -394,5 +394,6 @@ export default function Home() {
     </div>
   );
 }
+
 
 

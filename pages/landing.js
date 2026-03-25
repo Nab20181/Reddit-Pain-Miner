@@ -55,7 +55,7 @@ function Nav() {
       <div className="max-w-5xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <span className="text-lg">⛏️</span>
-          <span className="font-semibold text-slate-100 tracking-tight">PainMiner</span>
+          <span className="font-semibold text-slate-100 tracking-tight">Subtext</span>
         </div>
         <div className="flex items-center gap-4">
           <Link href="/pricing" className="text-xs text-slate-400 hover:text-slate-200 transition hidden sm:block">Pricing</Link>
@@ -96,7 +96,7 @@ function DemoCard() {
           <div className="w-3 h-3 rounded-full bg-[#1e2a3a]" />
         </div>
         <div className="flex-1 bg-[#0d1420] rounded-md px-3 py-1 text-xs text-slate-500 text-center">
-          painminer.com
+          Subtext.com
         </div>
       </div>
 
@@ -190,7 +190,7 @@ export default function Landing() {
           </span>
         </h1>
         <p className="text-slate-400 text-xl max-w-2xl mx-auto mb-8 leading-relaxed">
-          PainMiner analyzes any Reddit community and surfaces the real frustrations, unmet needs, and product opportunities hiding in plain sight.
+          Subtext analyzes any Reddit community and surfaces the real frustrations, unmet needs, and product opportunities hiding in plain sight.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
@@ -313,7 +313,7 @@ export default function Landing() {
             Your next product idea is already out there.
           </h2>
           <p className="text-slate-400 mb-8 text-lg">
-            Someone is posting about it on Reddit right now. PainMiner finds it in 30 seconds.
+            Someone is posting about it on Reddit right now. Subtext finds it in 30 seconds.
           </p>
           <Link
             href="/signup"
@@ -329,3 +329,4 @@ export default function Landing() {
     </div>
   );
 }
+

@@ -37,7 +37,7 @@ export default function Contact() {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <span className="text-lg">⛏️</span>
-            <span className="font-semibold text-slate-100 tracking-tight">PainMiner</span>
+            <span className="font-semibold text-slate-100 tracking-tight">Subtext</span>
           </Link>
           <Link href="/signup" className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition font-medium">
             Join waitlist
@@ -151,8 +151,8 @@ export default function Contact() {
 
             <p className="text-center text-slate-600 text-xs mt-6">
               Or email us directly at{' '}
-              <a href="mailto:hello@painminer.com" className="text-blue-400 hover:text-blue-300 transition">
-                hello@painminer.com
+              <a href="mailto:hello@Subtext.com" className="text-blue-400 hover:text-blue-300 transition">
+                hello@Subtext.com
               </a>
             </p>
           </>
@@ -162,3 +162,4 @@ export default function Contact() {
     </div>
   );
 }
+

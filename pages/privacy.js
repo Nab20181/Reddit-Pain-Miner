@@ -14,7 +14,7 @@ export default function Privacy() {
         <div className="max-w-4xl mx-auto">
           <Link href="/" className="flex items-center gap-2.5 w-fit">
             <span className="text-lg">⛏️</span>
-            <span className="font-semibold text-slate-100 tracking-tight">PainMiner</span>
+            <span className="font-semibold text-slate-100 tracking-tight">Subtext</span>
           </Link>
         </div>
       </nav>
@@ -24,7 +24,7 @@ export default function Privacy() {
         <p className="text-slate-500 text-sm mb-12">Last updated: March 2026</p>
 
         <Section title="Overview">
-          <p>PainMiner ("we", "us", "our") is committed to protecting your privacy. This policy explains what data we collect, how we use it, and your rights.</p>
+          <p>Subtext ("we", "us", "our") is committed to protecting your privacy. This policy explains what data we collect, how we use it, and your rights.</p>
         </Section>
 
         <Section title="Data We Collect">
@@ -52,7 +52,7 @@ export default function Privacy() {
         </Section>
 
         <Section title="Contact">
-          <p>Questions? Email us at <span className="text-blue-400">hello@painminer.com</span></p>
+          <p>Questions? Email us at <span className="text-blue-400">hello@Subtext.com</span></p>
         </Section>
       </div>
 
@@ -74,4 +74,5 @@ function Footer() {
     </footer>
   );
 }
+
 
