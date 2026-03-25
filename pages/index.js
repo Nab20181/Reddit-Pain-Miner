@@ -60,7 +60,9 @@ function CopyButton({ text }) {
 
 export default function Home() {
   const [subreddit, setSubreddit] = useState('');
-  const [apiKey, setApiKey] = useState('');
+  const [apiKey, setApiKey] = useState(
+    typeof window !== 'undefined' ? localStorage.getItem('pm_api_key') || '' : ''
+  );
   const [timeframe, setTimeframe] = useState('month');
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState('');
@@ -125,6 +127,7 @@ export default function Home() {
   };
 
   const fullText = analysis ? JSON.stringify(analysis, null, 2) : '';
+  const serverKeyConfigured = process.env.NEXT_PUBLIC_HAS_SERVER_KEY === 'true';
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans">
@@ -181,17 +184,19 @@ export default function Home() {
                 />
               </div>
             </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Claude API Key</label>
-              <input
-                type="password"
-                value={apiKey}
-                onChange={e => setApiKey(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && analyze()}
-                placeholder="sk-ant-..."
-                className="w-full bg-white/[0.05] border border-white/[0.1] rounded-xl px-3 py-2.5 text-white placeholder-gray-600 text-sm focus:outline-none focus:border-orange-500/60 transition font-mono"
-              />
-            </div>
+            {!serverKeyConfigured && (
+              <div>
+                <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Claude API Key</label>
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={e => { setApiKey(e.target.value); localStorage.setItem('pm_api_key', e.target.value); }}
+                  onKeyDown={e => e.key === 'Enter' && analyze()}
+                  placeholder="sk-ant-..."
+                  className="w-full bg-white/[0.05] border border-white/[0.1] rounded-xl px-3 py-2.5 text-white placeholder-gray-600 text-sm focus:outline-none focus:border-orange-500/60 transition font-mono"
+                />
+              </div>
+            )}
           </div>
 
           {/* Timeframe */}

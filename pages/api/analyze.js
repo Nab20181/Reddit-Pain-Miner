@@ -1,7 +1,10 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { posts, subreddit, apiKey } = req.body;
+  const { posts, subreddit, apiKey: userKey } = req.body;
+
+  // Use server-side key if set, otherwise fall back to user-supplied key
+  const apiKey = process.env.ANTHROPIC_API_KEY || userKey;
 
   if (!posts || !apiKey) {
     return res.status(400).json({ error: 'Posts and API key are required.' });
