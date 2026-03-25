@@ -60,7 +60,7 @@ function Nav() {
         <div className="flex items-center gap-4">
           <Link href="/pricing" className="text-xs text-slate-400 hover:text-slate-200 transition hidden sm:block">Pricing</Link>
           <Link href="/faq" className="text-xs text-slate-400 hover:text-slate-200 transition hidden sm:block">FAQ</Link>
-          <Link href="/app" className="text-xs text-slate-400 hover:text-slate-200 transition">Try free</Link>
+          <Link href="/" className="text-xs text-slate-400 hover:text-slate-200 transition">Try free</Link>
           <Link href="/signup" className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition font-medium">
             Join waitlist
           </Link>
@@ -74,7 +74,7 @@ function Footer() {
   return (
     <footer className="border-t border-[#1e2a3a] px-6 py-8">
       <div className="max-w-5xl mx-auto flex flex-wrap gap-4 justify-center text-xs text-slate-500">
-        <Link href="/app" className="hover:text-slate-300 transition">App</Link>
+        <Link href="/" className="hover:text-slate-300 transition">App</Link>
         <Link href="/pricing" className="hover:text-slate-300 transition">Pricing</Link>
         <Link href="/faq" className="hover:text-slate-300 transition">FAQ</Link>
         <Link href="/privacy" className="hover:text-slate-300 transition">Privacy</Link>
@@ -194,7 +194,7 @@ export default function Landing() {
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href="/app"
+            href="/"
             className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl transition text-sm"
           >
             Try it free →
@@ -298,7 +298,7 @@ export default function Landing() {
             <Link href="/pricing" className="bg-[#161c27] hover:bg-[#1e2a3a] border border-[#1e2a3a] text-slate-200 font-semibold px-6 py-3 rounded-xl transition text-sm">
               See pricing
             </Link>
-            <Link href="/app" className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
+            <Link href="/" className="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
               Try it free →
             </Link>
           </div>
