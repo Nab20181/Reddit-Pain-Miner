@@ -140,9 +140,10 @@ export default function Home() {
             <span className="font-semibold text-slate-100 tracking-tight">PainMiner</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="/login" className="text-xs text-slate-400 hover:text-slate-200 transition">Sign in</a>
+            <a href="/pricing" className="text-xs text-slate-400 hover:text-slate-200 transition">Pricing</a>
+            <a href="/faq" className="text-xs text-slate-400 hover:text-slate-200 transition">FAQ</a>
             <a href="/signup" className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg transition font-medium">
-              Get started
+              Join waitlist
             </a>
           </div>
         </div>
@@ -380,6 +381,16 @@ export default function Home() {
           API keys stay in your browser session only · Built with Next.js + Claude
         </p>
       </div>
+
+      <footer className="border-t border-[#1e2a3a] px-6 py-8 mt-8">
+        <div className="max-w-4xl mx-auto flex flex-wrap gap-4 justify-center text-xs text-slate-500">
+          <a href="/pricing" className="hover:text-slate-300 transition">Pricing</a>
+          <a href="/faq" className="hover:text-slate-300 transition">FAQ</a>
+          <a href="/privacy" className="hover:text-slate-300 transition">Privacy</a>
+          <a href="/tos" className="hover:text-slate-300 transition">Terms</a>
+          <a href="/signup" className="hover:text-slate-300 transition">Join waitlist</a>
+        </div>
+      </footer>
     </div>
   );
 }

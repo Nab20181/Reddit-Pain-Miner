@@ -3,12 +3,15 @@ import Link from 'next/link';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Supabase auth goes here later
+    setLoading(true);
+    // TODO: wire to Supabase or email provider
+    await new Promise(r => setTimeout(r, 600));
+    setLoading(false);
     setSubmitted(true);
   };
 
@@ -27,23 +30,26 @@ export default function Signup() {
         <div className="w-full max-w-sm">
           {submitted ? (
             <div className="text-center">
-              <div className="text-4xl mb-4">✅</div>
+              <div className="text-5xl mb-4">⛏️</div>
               <h2 className="text-xl font-bold text-slate-100 mb-2">You're on the list</h2>
-              <p className="text-slate-400 text-sm">We'll be in touch when PainMiner launches. In the meantime, try the tool.</p>
-              <Link href="/" className="mt-6 inline-block text-sm text-blue-400 hover:text-blue-300 transition">
-                ← Back to app
+              <p className="text-slate-400 text-sm leading-relaxed">
+                We'll email you when PainMiner is ready. In the meantime, the tool is live — go find some pain.
+              </p>
+              <Link href="/" className="mt-6 inline-block bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition">
+                Try the tool →
               </Link>
             </div>
           ) : (
             <>
               <div className="text-center mb-8">
-                <h1 className="text-2xl font-bold text-slate-100 mb-2">Get started free</h1>
-                <p className="text-slate-400 text-sm">Join the waitlist for full access.</p>
+                <span className="text-4xl">⛏️</span>
+                <h1 className="text-2xl font-bold text-slate-100 mt-3 mb-2">Join the waitlist</h1>
+                <p className="text-slate-400 text-sm">Be first in line when PainMiner launches.</p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Email</label>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Email address</label>
                   <input
                     type="email"
                     value={email}
@@ -53,28 +59,25 @@ export default function Signup() {
                     className="w-full bg-[#161c27] border border-[#1e2a3a] rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-blue-500/60 transition"
                   />
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Password</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    required
-                    placeholder="••••••••"
-                    className="w-full bg-[#161c27] border border-[#1e2a3a] rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 text-sm focus:outline-none focus:border-blue-500/60 transition"
-                  />
-                </div>
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-xl transition text-sm mt-2"
+                  disabled={loading}
+                  className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-[#1e2a3a] disabled:text-slate-600 text-white font-semibold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2"
                 >
-                  Create account
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                      </svg>
+                      Joining...
+                    </>
+                  ) : 'Join waitlist'}
                 </button>
               </form>
 
-              <p className="text-center text-slate-500 text-xs mt-6">
-                Already have an account?{' '}
-                <Link href="/login" className="text-blue-400 hover:text-blue-300 transition">Sign in</Link>
+              <p className="text-center text-slate-600 text-xs mt-6">
+                No spam. No credit card. Just early access.
               </p>
             </>
           )}
