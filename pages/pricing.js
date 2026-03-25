@@ -141,8 +141,16 @@ export default function Pricing() {
           ))}
         </div>
 
+        {/* Refund policy */}
+        <div className="mt-8 bg-[#161c27] border border-[#1e2a3a] rounded-2xl p-5 text-center">
+          <p className="text-slate-300 text-sm font-medium mb-1">Cancel anytime. No refunds.</p>
+          <p className="text-slate-500 text-xs leading-relaxed max-w-md mx-auto">
+            You can cancel your subscription at any time — access continues until the end of your billing period. All sales are final. Having an issue? <a href="mailto:hello@painminer.com" className="text-blue-400 hover:text-blue-300 transition">Contact us</a> and we'll make it right.
+          </p>
+        </div>
+
         {/* FAQ teaser */}
-        <div className="mt-12 text-center">
+        <div className="mt-6 text-center">
           <p className="text-slate-400 text-sm">
             Questions?{' '}
             <Link href="/faq" className="text-blue-400 hover:text-blue-300 transition">

@@ -57,6 +57,11 @@ export default function TOS() {
           <p>To the maximum extent permitted by law, PainMiner and its operators shall not be liable for any indirect, incidental, or consequential damages arising from your use of the service.</p>
         </Section>
 
+        <Section title="Payments & Refunds">
+          <p>All paid plans are billed monthly in advance. You may cancel your subscription at any time — your access will continue until the end of the current billing period.</p>
+          <p><strong className="text-slate-300">All sales are final. We do not offer refunds.</strong> By subscribing, you acknowledge and agree to this policy. If you experience a technical issue preventing you from using the service, contact us at <span className="text-blue-400">hello@painminer.com</span> and we will work to resolve it promptly.</p>
+        </Section>
+
         <Section title="Changes">
           <p>We may update these terms at any time. Continued use of PainMiner constitutes acceptance of the updated terms.</p>
         </Section>
