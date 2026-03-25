@@ -135,10 +135,10 @@ export default function Home() {
       {/* Nav */}
       <nav className="border-b border-[#1e2a3a] px-6 py-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+          <a href="/" className="flex items-center gap-2.5">
             <span className="text-lg">⛏️</span>
             <span className="font-semibold text-slate-100 tracking-tight">PainMiner</span>
-          </div>
+          </a>
           <div className="flex items-center gap-4">
             <a href="/pricing" className="text-xs text-slate-400 hover:text-slate-200 transition">Pricing</a>
             <a href="/faq" className="text-xs text-slate-400 hover:text-slate-200 transition">FAQ</a>
@@ -394,3 +394,4 @@ export default function Home() {
     </div>
   );
 }
+
