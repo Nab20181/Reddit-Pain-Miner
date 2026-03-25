@@ -284,6 +284,27 @@ export default function Home() {
                           )}
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed">{p.description}</p>
+                        {p.sources?.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {p.sources.map((srcIdx) => {
+                              const post = posts[srcIdx - 1];
+                              if (!post) return null;
+                              return (
+                                <a
+                                  key={srcIdx}
+                                  href={post.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-orange-400 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] rounded-lg px-2 py-1 transition"
+                                >
+                                  <span>#{srcIdx}</span>
+                                  <span className="max-w-[160px] truncate">{post.title}</span>
+                                  <span>↗</span>
+                                </a>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

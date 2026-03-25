@@ -23,7 +23,7 @@ ${postsText}
 Return exactly this structure:
 {
   "painPoints": [
-    { "title": "short title", "description": "1-2 sentence description with specifics", "intensity": "high|medium|low" }
+    { "title": "short title", "description": "1-2 sentence description with specifics", "intensity": "high|medium|low", "sources": [1, 4, 7] }
   ],
   "themes": [
     { "theme": "theme name", "detail": "what pattern you noticed" }
@@ -38,7 +38,7 @@ Return exactly this structure:
 }
 
 Rules:
-- painPoints: exactly 5 items, ranked by intensity
+- painPoints: exactly 5 items, ranked by intensity. sources = array of post numbers (the [N] numbers) that support this pain point, up to 3
 - themes: 3-4 items
 - opportunities: 3 items  
 - quotes: 3-4 direct quotes
