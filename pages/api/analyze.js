@@ -7,8 +7,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Posts and API key are required.' });
   }
 
-  const postsText = posts
-    .map((p, i) => `[${i + 1}] "${p.title}" (${p.score} upvotes, ${p.num_comments} comments)\n${p.selftext}`)
+  // Limit to top 25 posts, short snippets to stay within token limits
+  const trimmedPosts = posts.slice(0, 25);
+  const postsText = trimmedPosts
+    .map((p, i) => `[${i + 1}] "${p.title}" (${p.score} upvotes)\n${p.selftext?.slice(0, 150) || ''}`)
     .join('\n\n');
 
   const prompt = `You are a product researcher analyzing Reddit posts to find real, recurring pain points.
@@ -49,6 +51,7 @@ Be specific, actionable, and direct. Skip anything generic. This is for founders
     if (!claudeRes.ok) {
       const err = await claudeRes.json();
       const errMsg = err.error?.message || JSON.stringify(err);
+      console.error('Claude error:', claudeRes.status, JSON.stringify(err));
       return res.status(claudeRes.status).json({ error: `Claude (${claudeRes.status}): ${errMsg}` });
     }
 
