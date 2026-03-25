@@ -7,38 +7,89 @@ const TIMEFRAMES = [
   { label: 'All Time', value: 'all' },
 ];
 
+const INTENSITY_COLOR = {
+  high: 'bg-red-500/10 text-red-400 border-red-500/20',
+  medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+  low: 'bg-green-500/10 text-green-400 border-green-500/20',
+};
+
+function Badge({ label, color }) {
+  return (
+    <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${color}`}>
+      {label}
+    </span>
+  );
+}
+
+function Card({ children, className = '' }) {
+  return (
+    <div className={`bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+function SectionHeader({ icon, title, subtitle }) {
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <span className="text-xl">{icon}</span>
+      <div>
+        <h2 className="font-semibold text-white text-base">{title}</h2>
+        {subtitle && <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>}
+      </div>
+    </div>
+  );
+}
+
+function CopyButton({ text }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button
+      onClick={copy}
+      className="text-xs text-gray-500 hover:text-gray-300 transition flex items-center gap-1"
+    >
+      {copied ? '✓ Copied' : 'Copy'}
+    </button>
+  );
+}
+
 export default function Home() {
   const [subreddit, setSubreddit] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [timeframe, setTimeframe] = useState('month');
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState('');
-  const [result, setResult] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
   const [error, setError] = useState(null);
   const [posts, setPosts] = useState([]);
+  const [analyzedSub, setAnalyzedSub] = useState('');
 
   const analyze = async () => {
     if (!subreddit.trim() || !apiKey.trim()) {
-      setError('Please enter both a subreddit and your Claude API key.');
+      setError('Please enter a subreddit and your Claude API key.');
       return;
     }
 
     setLoading(true);
-    setResult(null);
+    setAnalysis(null);
     setError(null);
     setPosts([]);
 
+    const sub = subreddit.trim().replace(/^r\//, '');
+
     try {
-      setLoadingMsg('Fetching Reddit posts...');
-      const sub = subreddit.trim().replace(/^r\//, '');
+      setLoadingMsg('Fetching posts from Reddit...');
       const redditRes = await fetch(
         `https://www.reddit.com/r/${sub}/top.json?limit=50&t=${timeframe}`,
-        { headers: { 'Accept': 'application/json' } }
+        { headers: { Accept: 'application/json' } }
       );
 
-      if (!redditRes.ok) {
-        throw new Error(`Subreddit not found or private (Reddit returned ${redditRes.status})`);
-      }
+      if (!redditRes.ok) throw new Error(`Subreddit not found or private (${redditRes.status})`);
 
       const redditData = await redditRes.json();
       const fetchedPosts = redditData.data.children.map(p => ({
@@ -49,27 +100,22 @@ export default function Home() {
         url: `https://reddit.com${p.data.permalink}`,
       }));
 
-      if (!fetchedPosts || fetchedPosts.length === 0) {
-        throw new Error('No posts found. Check the subreddit name.');
-      }
+      if (!fetchedPosts.length) throw new Error('No posts found. Check the subreddit name.');
 
       setPosts(fetchedPosts);
+      setLoadingMsg(`Analyzing ${fetchedPosts.length} posts...`);
 
-      setLoadingMsg(`Analyzing ${fetchedPosts.length} posts with Claude...`);
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          posts: fetchedPosts.slice(0, 25),
-          subreddit: sub,
-          apiKey: apiKey.trim(),
-        }),
+        body: JSON.stringify({ posts: fetchedPosts.slice(0, 25), subreddit: sub, apiKey: apiKey.trim() }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Something went wrong.');
 
-      setResult(data.analysis);
+      setAnalysis(data.analysis);
+      setAnalyzedSub(sub);
     } catch (err) {
       setError(err.message || 'Something went wrong.');
     } finally {
@@ -78,71 +124,88 @@ export default function Home() {
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') analyze();
-  };
-
-  const renderResult = (text) => {
-    return text.split('\n').map((line, i) => {
-      if (line.match(/^\*\*.*\*\*$/) || line.match(/^#+\s/)) {
-        return <h3 key={i} className="text-lg font-bold text-white mt-6 mb-2">{line.replace(/\*\*/g, '').replace(/^#+\s/, '')}</h3>;
-      }
-      if (line.match(/^\d+\.\s\*\*/)) {
-        const num = line.match(/^\d+\./)[0];
-        const content = line.replace(/^\d+\.\s\*\*/, '').replace(/\*\*/, '');
-        return <p key={i} className="font-semibold text-orange-400 mt-4 mb-1">{num} {content}</p>;
-      }
-      if (line.startsWith('- ') || line.startsWith('* ')) {
-        return <li key={i} className="text-gray-300 ml-4 list-disc mb-1">{line.slice(2).replace(/\*\*/g, '')}</li>;
-      }
-      if (line.trim() === '') return <br key={i} />;
-      return <p key={i} className="text-gray-300 mb-1">{line.replace(/\*\*/g, '')}</p>;
-    });
-  };
+  const fullText = analysis ? JSON.stringify(analysis, null, 2) : '';
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      {/* Header */}
-      <div className="border-b border-gray-800 px-6 py-4">
-        <div className="max-w-3xl mx-auto flex items-center gap-3">
-          <span className="text-2xl">⛏️</span>
-          <div>
-            <h1 className="text-xl font-bold">Reddit Pain Miner</h1>
-            <p className="text-gray-400 text-sm">Find real problems. Build real products.</p>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans">
 
-      <div className="max-w-3xl mx-auto px-6 py-10">
+      {/* Nav */}
+      <nav className="border-b border-white/[0.06] px-6 py-4">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="text-lg">⛏️</span>
+            <span className="font-semibold text-white tracking-tight">PainMiner</span>
+          </div>
+          <a
+            href="https://console.anthropic.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-gray-500 hover:text-gray-300 transition"
+          >
+            Get Claude API key →
+          </a>
+        </div>
+      </nav>
+
+      <div className="max-w-4xl mx-auto px-6 py-16">
+
+        {/* Hero */}
+        {!analysis && (
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold tracking-tight mb-3">
+              Find what people{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
+                actually want
+              </span>
+            </h1>
+            <p className="text-gray-400 text-lg max-w-xl mx-auto">
+              Analyze any subreddit and surface real pain points, product opportunities, and quotes — ready for your next build.
+            </p>
+          </div>
+        )}
+
         {/* Input card */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6">
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-400 mb-1">Subreddit</label>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-500 font-mono">r/</span>
+        <Card className="mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Subreddit</label>
+              <div className="flex items-center bg-white/[0.05] border border-white/[0.1] rounded-xl overflow-hidden focus-within:border-orange-500/60 transition">
+                <span className="pl-3 text-gray-500 text-sm select-none">r/</span>
+                <input
+                  type="text"
+                  value={subreddit}
+                  onChange={e => setSubreddit(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && analyze()}
+                  placeholder="solopreneur"
+                  className="flex-1 bg-transparent px-2 py-2.5 text-white placeholder-gray-600 text-sm focus:outline-none"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Claude API Key</label>
               <input
-                type="text"
-                value={subreddit}
-                onChange={(e) => setSubreddit(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="startups, solopreneur, entrepreneur..."
-                className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition"
+                type="password"
+                value={apiKey}
+                onChange={e => setApiKey(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && analyze()}
+                placeholder="sk-ant-..."
+                className="w-full bg-white/[0.05] border border-white/[0.1] rounded-xl px-3 py-2.5 text-white placeholder-gray-600 text-sm focus:outline-none focus:border-orange-500/60 transition font-mono"
               />
             </div>
           </div>
 
-          {/* Timeframe selector */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-400 mb-2">Timeframe</label>
+          {/* Timeframe */}
+          <div className="mb-5">
+            <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">Timeframe</label>
             <div className="flex gap-2 flex-wrap">
               {TIMEFRAMES.map(tf => (
                 <button
                   key={tf.value}
                   onClick={() => setTimeframe(tf.value)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition border ${
+                  className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition ${
                     timeframe === tf.value
-                      ? 'bg-orange-500 border-orange-500 text-white'
-                      : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-orange-500 hover:text-white'
+                      ? 'bg-orange-500 text-white'
+                      : 'bg-white/[0.05] text-gray-400 hover:text-white hover:bg-white/[0.08]'
                   }`}
                 >
                   {tf.label}
@@ -151,93 +214,150 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mb-5">
-            <label className="block text-sm font-medium text-gray-400 mb-1">
-              Claude API Key
-              <span className="text-gray-500 font-normal ml-2">
-                (stays in your browser —{' '}
-                <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">
-                  get one free
-                </a>)
-              </span>
-            </label>
-            <input
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="sk-ant-..."
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 transition font-mono text-sm"
-            />
-          </div>
-
           <button
             onClick={analyze}
             disabled={loading}
-            className="w-full bg-orange-500 hover:bg-orange-400 disabled:bg-gray-700 disabled:text-gray-500 text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2"
+            className="w-full bg-orange-500 hover:bg-orange-400 active:bg-orange-600 disabled:bg-white/[0.06] disabled:text-gray-600 text-white font-semibold py-3 rounded-xl transition text-sm flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
-                <span className="animate-spin inline-block">⟳</span>
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                </svg>
                 {loadingMsg || 'Working...'}
               </>
             ) : (
-              <>⛏️ Mine for Pain Points</>
+              'Mine for Pain Points'
             )}
           </button>
-        </div>
+        </Card>
 
         {/* Error */}
         {error && (
-          <div className="bg-red-900/30 border border-red-700 rounded-xl p-4 mb-6 text-red-300">
+          <div className="border border-red-500/20 bg-red-500/10 rounded-xl p-4 mb-6 text-red-400 text-sm">
             {error}
           </div>
         )}
 
-        {/* Analysis Results */}
-        {result && (
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6">
-            <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-800">
-              <h2 className="font-bold text-lg">Analysis: r/{subreddit.replace(/^r\//, '')}</h2>
-              <span className="text-sm text-gray-400 bg-gray-800 px-3 py-1 rounded-full">
-                {posts.length} posts · {TIMEFRAMES.find(t => t.value === timeframe)?.label}
-              </span>
-            </div>
-            <div className="prose prose-invert max-w-none">
-              {renderResult(result)}
-            </div>
-          </div>
-        )}
+        {/* Results */}
+        {analysis && (
+          <div className="space-y-4 mt-8">
 
-        {/* Source Posts */}
-        {posts.length > 0 && (
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-            <h2 className="font-bold text-lg mb-4 pb-4 border-b border-gray-800">
-              📋 Source Posts <span className="text-gray-500 font-normal text-sm ml-2">click to verify on Reddit</span>
-            </h2>
-            <div className="space-y-2">
-              {posts.map((post, i) => (
-                <a
-                  key={i}
-                  href={post.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-800 transition group"
-                >
-                  <span className="text-gray-600 text-sm font-mono mt-0.5 w-5 shrink-0">{i + 1}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-gray-300 group-hover:text-white text-sm leading-snug">{post.title}</p>
-                    <p className="text-gray-600 text-xs mt-1">↑ {post.score.toLocaleString()} · {post.num_comments} comments</p>
+            {/* Header row */}
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <h2 className="font-semibold text-white">r/{analyzedSub}</h2>
+                <p className="text-xs text-gray-500 mt-0.5">{posts.length} posts · {TIMEFRAMES.find(t => t.value === timeframe)?.label}</p>
+              </div>
+              <CopyButton text={fullText} />
+            </div>
+
+            {/* Summary */}
+            {analysis.summary && (
+              <Card className="border-orange-500/20 bg-orange-500/5">
+                <p className="text-gray-300 text-sm leading-relaxed">{analysis.summary}</p>
+              </Card>
+            )}
+
+            {/* Pain Points */}
+            {analysis.painPoints?.length > 0 && (
+              <Card>
+                <SectionHeader icon="🔥" title="Pain Points" subtitle="Ranked by intensity" />
+                <div className="space-y-3">
+                  {analysis.painPoints.map((p, i) => (
+                    <div key={i} className="flex gap-3 items-start">
+                      <span className="text-gray-600 text-sm font-mono mt-0.5 w-4 shrink-0">{i + 1}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-white text-sm font-medium">{p.title}</span>
+                          {p.intensity && (
+                            <Badge
+                              label={p.intensity}
+                              color={INTENSITY_COLOR[p.intensity] || INTENSITY_COLOR.medium}
+                            />
+                          )}
+                        </div>
+                        <p className="text-gray-400 text-sm leading-relaxed">{p.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {/* Two column: Themes + Opportunities */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {analysis.themes?.length > 0 && (
+                <Card>
+                  <SectionHeader icon="🔁" title="Recurring Themes" />
+                  <div className="space-y-3">
+                    {analysis.themes.map((t, i) => (
+                      <div key={i}>
+                        <p className="text-white text-sm font-medium">{t.theme}</p>
+                        <p className="text-gray-400 text-xs mt-0.5 leading-relaxed">{t.detail}</p>
+                      </div>
+                    ))}
                   </div>
-                  <span className="text-gray-600 group-hover:text-orange-400 text-xs shrink-0 mt-0.5">↗</span>
-                </a>
-              ))}
+                </Card>
+              )}
+
+              {analysis.opportunities?.length > 0 && (
+                <Card>
+                  <SectionHeader icon="💡" title="Opportunities" />
+                  <div className="space-y-3">
+                    {analysis.opportunities.map((o, i) => (
+                      <div key={i}>
+                        <p className="text-white text-sm font-medium">{o.idea}</p>
+                        <p className="text-gray-400 text-xs mt-0.5 leading-relaxed">{o.why}</p>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
             </div>
+
+            {/* Quotes */}
+            {analysis.quotes?.length > 0 && (
+              <Card>
+                <SectionHeader icon="💬" title="Quotes to Save" subtitle="Ready for landing pages & ads" />
+                <div className="space-y-3">
+                  {analysis.quotes.map((q, i) => (
+                    <div key={i} className="border-l-2 border-orange-500/30 pl-4">
+                      <p className="text-gray-200 text-sm italic">"{q.text}"</p>
+                      <p className="text-gray-500 text-xs mt-1">{q.why}</p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {/* Source Posts */}
+            <Card>
+              <SectionHeader icon="📋" title="Source Posts" subtitle="Click to verify on Reddit" />
+              <div className="space-y-1">
+                {posts.map((post, i) => (
+                  <a
+                    key={i}
+                    href={post.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/[0.04] transition group"
+                  >
+                    <span className="text-gray-600 text-xs font-mono w-5 shrink-0 text-right">{i + 1}</span>
+                    <p className="flex-1 text-gray-400 group-hover:text-gray-200 text-sm truncate transition">{post.title}</p>
+                    <span className="text-gray-600 text-xs shrink-0">↑{post.score.toLocaleString()}</span>
+                    <span className="text-gray-700 group-hover:text-orange-400 text-xs transition">↗</span>
+                  </a>
+                ))}
+              </div>
+            </Card>
+
           </div>
         )}
 
-        <p className="text-center text-gray-600 text-xs mt-10">
-          Your API key never leaves your browser session. Built with Next.js + Claude.
+        <p className="text-center text-gray-700 text-xs mt-12">
+          API keys stay in your browser session only · Built with Next.js + Claude
         </p>
       </div>
     </div>
