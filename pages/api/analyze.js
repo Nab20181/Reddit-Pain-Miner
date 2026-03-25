@@ -48,7 +48,8 @@ Be specific, actionable, and direct. Skip anything generic. This is for founders
 
     if (!claudeRes.ok) {
       const err = await claudeRes.json();
-      return res.status(claudeRes.status).json({ error: err.error?.message || 'Claude API error' });
+      const errMsg = err.error?.message || JSON.stringify(err);
+      return res.status(claudeRes.status).json({ error: `Claude (${claudeRes.status}): ${errMsg}` });
     }
 
     const claudeData = await claudeRes.json();

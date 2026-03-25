@@ -3,6 +3,7 @@ import { useState } from 'react';
 export default function Home() {
   const [subreddit, setSubreddit] = useState('');
   const [apiKey, setApiKey] = useState('');
+  const [showKey, setShowKey] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState('');
   const [result, setResult] = useState(null);
